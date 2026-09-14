@@ -64,6 +64,30 @@ const factorColor: Record<ContextualFactor["type"], string> = {
   combination: "text-emerald-600 bg-emerald-100",
 };
 
+/**
+ * Rótulos que já carregam a ressalva em si mesmos.
+ *
+ * Prefixar todos com "Possível situação de" produzia "Possível situação de
+ * possível grooming / aliciamento". Mas tirar o prefixo de todos seria pior:
+ * onde o rótulo afirma o fato seco ("Chantagem", "Ameaça"), a ressalva é o que
+ * impede a tela de acusar alguém a partir de uma análise automatizada.
+ */
+const SELF_HEDGED = [
+  "possível",
+  "possivel",
+  "sinais de",
+  "conteúdo potencialmente",
+  "linguagem relacionada",
+  "tentativa de",
+];
+
+/** Título do alerta: hedge onde falta, sem duplicar onde já existe. */
+function alertHeadline(categoryName: string): string {
+  const normalized = categoryName.toLocaleLowerCase("pt-BR");
+  const alreadyHedged = SELF_HEDGED.some((prefix) => normalized.startsWith(prefix));
+  return alreadyHedged ? categoryName : `Possível situação de ${normalized}`;
+}
+
 const fullOrientationSteps = [
   "Preserve os registros da conversa (capturas de tela, horários e nomes de contato) antes de qualquer ação.",
   "Avalie o bloqueio do contato e ajuste as configurações de privacidade e permissões dos aplicativos utilizados.",
@@ -111,7 +135,7 @@ export function AlertDetail({
               {priorityLabel[assessment.priority]}
             </div>
             <h2 className="mt-1.5 text-base font-extrabold leading-tight">
-              Possível situação de {categoryName.toLowerCase()}
+              {alertHeadline(categoryName)}
             </h2>
             <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-white/80">
               <span className="font-semibold">Nível: {levelLabel[assessment.level]}</span>
