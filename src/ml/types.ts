@@ -1,11 +1,3 @@
-/**
- * DIANA — Tipos do domínio de análise de risco (ML).
- *
- * Esta camada descreve o CONTRATO entre o pipeline de análise e o restante da
- * aplicação. Os componentes React consomem somente `AnalysisResult` e nunca
- * determinam risco diretamente.
- */
-
 export type MessageAuthor = "child" | "other";
 
 export interface ConversationMessage {
@@ -65,7 +57,6 @@ export interface RiskAssessment {
   categories: RiskPrediction[];
   requiresGuardianAttention: boolean;
   rationale: string;
-  /** Indicador técnico 0–100 (somente para o protótipo). */
   score: number;
 }
 

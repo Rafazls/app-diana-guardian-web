@@ -1,10 +1,3 @@
-/**
- * Cliente do backend da DIANA.
- *
- * Os tipos aqui são os mesmos que o backend usa para montar a resposta: se o
- * contrato mudar, o `typecheck` quebra antes de a tela quebrar na frente do
- * responsável.
- */
 import type {
   AlertItem,
   DashboardPayload,
@@ -15,7 +8,6 @@ import type { AnalysisResult } from "@/ml/types";
 
 const BASE = import.meta.env.VITE_API_BASE ?? "/api";
 
-/** Erro já traduzido para algo que o responsável entende. */
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -47,7 +39,6 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
       headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
     });
   } catch {
-    // Backend fora do ar: falha explícita, não tela vazia.
     throw new ApiError("Não foi possível falar com o servidor. Ele está rodando?", 0);
   }
 

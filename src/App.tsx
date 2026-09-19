@@ -18,7 +18,6 @@ const tabs: { id: GuardianTab; label: string; icon: LucideIcon }[] = [
   { id: "settings", label: "Configurações", icon: Settings },
 ];
 
-/** De quanto em quanto tempo a tela procura alertas novos. */
 const POLL_MS = 15_000;
 
 export function App() {
@@ -41,8 +40,7 @@ export function App() {
       setAlerts(list);
       if (!silent) setError(null);
     } catch (err) {
-      // Numa atualização de fundo, manter o que já está na tela é melhor do que
-      // trocar dado bom por uma mensagem de erro.
+
       if (!silent) setError(message(err, "Falha ao carregar os alertas."));
     }
   }, []);

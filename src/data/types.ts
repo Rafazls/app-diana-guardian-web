@@ -1,8 +1,3 @@
-/**
- * Tipos da tela do responsável.
- *
- * Espelham o que o backend devolve — mudou lá, o `typecheck` acusa aqui.
- */
 export type Priority = "alta" | "media" | "baixa";
 
 export interface AlertItem {
