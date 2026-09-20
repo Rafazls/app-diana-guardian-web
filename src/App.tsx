@@ -1,11 +1,13 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Home, Bell, ShieldCheck, Settings, type LucideIcon } from "lucide-react";
+import glauxLogo from "@/assets/GlauxC.png";
 import { AppShell } from "@/components/phone/AppShell";
 import { Dashboard } from "@/components/guardian/Dashboard";
 import { AlertsList } from "@/components/guardian/AlertsList";
 import { SafetyCenter } from "@/components/guardian/SafetyCenter";
 import { SettingsView } from "@/components/guardian/Settings";
 import { AlertDetail } from "@/components/guardian/AlertDetail";
+import { AlertToastStack } from "@/components/shared/AlertToastStack";
 import { ErrorState, Loading } from "@/components/shared/States";
 import { ApiError, api, type AlertDetailPayload } from "@/api";
 import type { AlertItem, DashboardPayload, GuardianSettings, GuardianTab } from "@/data/types";
@@ -28,6 +30,8 @@ export function App() {
   const [detail, setDetail] = useState<AlertDetailPayload | null>(null);
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [toasts, setToasts] = useState<AlertItem[]>([]);
+  const seenAlertIds = useRef<Set<string> | null>(null);
 
   const message = (err: unknown, fallback: string) =>
     err instanceof ApiError ? err.message : fallback;
@@ -38,6 +42,18 @@ export function App() {
       const [dash, list] = await Promise.all([api.dashboard(), api.alerts()]);
       setDashboard(dash);
       setAlerts(list);
+
+      if (seenAlertIds.current === null) {
+        // Primeira carga: só registra o que já existe — não é "novo".
+        seenAlertIds.current = new Set(list.map((a) => a.id));
+      } else {
+        const novos = list.filter((a) => !seenAlertIds.current!.has(a.id));
+        if (novos.length > 0) {
+          for (const a of novos) seenAlertIds.current.add(a.id);
+          setToasts((prev) => [...novos, ...prev]);
+        }
+      }
+
       if (!silent) setError(null);
     } catch (err) {
 
@@ -56,8 +72,13 @@ export function App() {
     api.settings().then(setSettings).catch(() => setSettings(null));
   }, [tab, settings]);
 
+  const dismissToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
   const openAlert = useCallback(
     async (alert: AlertItem) => {
+      dismissToast(alert.id);
       setLoadingId(alert.id);
       try {
         setDetail(await api.alert(alert.id));
@@ -69,7 +90,7 @@ export function App() {
         setLoadingId(null);
       }
     },
-    [load],
+    [load, dismissToast],
   );
 
   const saveSettings = useCallback(async (next: GuardianSettings) => {
@@ -89,8 +110,8 @@ export function App() {
       {/* App bar */}
       <div className="flex h-14 shrink-0 items-center justify-between bg-brand-gradient px-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white text-base font-extrabold text-brand">
-            D
+          <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl bg-white">
+            <img src={glauxLogo} alt="DIANA" className="h-full w-full object-contain p-0.5" />
           </div>
           <span className="text-base font-extrabold tracking-tight text-white">DIANA</span>
         </div>
@@ -106,6 +127,7 @@ export function App() {
 
       {/* Conteúdo */}
       <div className="relative flex-1 overflow-hidden">
+        <AlertToastStack toasts={toasts} onOpen={(a) => void openAlert(a)} onDismiss={dismissToast} />
         {detail ? (
           <AlertDetail
             analysis={detail.analysis}
