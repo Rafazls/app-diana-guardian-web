@@ -148,6 +148,18 @@ Se o backend não estiver em `localhost:8080`, ajuste `DIANA_API_URL` (proxy
 de desenvolvimento) ou `VITE_API_BASE` (build de produção servido sem proxy)
 — ver [`.env.example`](.env.example).
 
+## Acesso a aplicação já hospedada
+URL:
+```bash
+https://tech4changediana.duckdns.org/
+```
+Credenciais de acesso:
+```bash
+usuário: responsavel
+senha:   NAJHEh2YSgCBZVRzSc6a
+```
+
+
 ## Telas
 
 | Aba | O que mostra |
