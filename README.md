@@ -179,6 +179,29 @@ npm run typecheck  # só a verificação de tipos
 npm run preview    # serve o build
 ```
 
+### Limitações conhecidas
+
+- **Nenhuma autenticação própria no app.** Qualquer
+  pessoa com a URL acessa a interface; qualquer controle de acesso hoje
+  fica por conta de uma camada externa (ex.: autenticação básica no
+  servidor que hospeda o build), não do código deste repositório.
+- **Interface fixa em português**, sem internacionalização.
+- **Reflete a limitação de "uma criança por vez" do backend** — a tela não
+  tem seletor de criança nem de responsável.
+
+### Próximos passos sugeridos
+
+- Tela de login/autenticação própria, alinhada com a autenticação real do
+  backend.
+- Trocar polling por atualização em tempo real (WebSocket/SSE) para
+  reduzir a latência de exibição do alerta.
+- Notificações push (web push / PWA) para alertar o responsável mesmo com
+  o app fechado.
+- Seletor de criança/responsável quando o backend passar a suportar
+  múltiplas crianças por implantação.
+
+
+
 ## Se você chegou aqui por um caso real
 
 **Disque 100** (violência contra crianças e adolescentes) e **CVV 188** (apoio
